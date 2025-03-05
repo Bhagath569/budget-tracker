@@ -11,6 +11,7 @@ function App() {
   const [transactions, setTransactions] = useState(() => {
     // Load transactions from localStorage on initial render
     const saved = localStorage.getItem('transactions');
+    console.log('Loaded from localStorage:', saved); // Debug: Check what’s loaded
     return saved ? JSON.parse(saved) : [];
   });
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -21,22 +22,32 @@ function App() {
 
   // Save transactions to localStorage whenever they change
   useEffect(() => {
+    console.log('Saving transactions to localStorage:', transactions); // Debug: Check what’s being saved
     localStorage.setItem('transactions', JSON.stringify(transactions));
   }, [transactions]);
 
   const addTransaction = (transaction) => {
-    // Add a unique ID and timestamp to the transaction
+    // Ensure amount is a number and add unique ID and date
     const newTransaction = {
       ...transaction,
-      id: Date.now(), // Simple unique ID based on timestamp
-      date: transaction.date || new Date().toISOString().split('T')[0], // Use provided date or current date
+      id: Date.now(),
+      date: transaction.date || new Date().toISOString().split('T')[0],
+      amount: Number(transaction.amount) || 0, // Ensure amount is a number
     };
-    setTransactions((prev) => [...prev, newTransaction]);
+    setTransactions((prev) => {
+      const updatedTransactions = [...prev, newTransaction];
+      console.log('Updated transactions:', updatedTransactions); // Debug: Verify new state
+      return updatedTransactions;
+    });
     setIsModalOpen(false);
   };
 
   const deleteTransaction = (id) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
+    setTransactions((prev) => {
+      const updatedTransactions = prev.filter((t) => t.id !== id);
+      console.log('After deletion:', updatedTransactions); // Debug: Verify new state
+      return updatedTransactions;
+    });
   };
 
   const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
